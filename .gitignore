@@ -1,0 +1,8 @@
+node_modules
+.scannerwork
+coverage
+.sonarlint
+.vscode
+scripts/scanner.sh
+archives
+.owasp-dependency-check

@@ -1,0 +1,73 @@
+{
+  "name": "easy-nodejs-project",
+  "version": "1.0.0",
+  "description": "Easy NodeJS Project",
+  "_moduleAliases": {
+    "root": ".",
+    "#server": "./src"
+  },
+  "ava": {
+    "files": [
+      "**/**.test.js"
+    ],
+    "verbose": true,
+    "concurrency": 4
+  },
+  "c8": {
+    "reporter": [
+      "clover",
+      "lcov"
+    ]
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=localhost nodemon ./src/start.js",
+    "--------": "---------------------- Testing & Test Coverage Framework --------------------",
+    "test": "c8 ava --verbose",
+    "cleansarif": "node ./scripts/clean_sarif_report.js",
+    "---------": "---------------------- Module Alias linking --------------------",
+    "preinstall": "command -v link-module-alias && link-module-alias clean || true",
+    "postinstall": "link-module-alias"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "chalk": "^2.4.2",
+    "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "jwt-decode": "^2.2.0",
+    "knex": "^0.20.7",
+    "lokijs": "^1.5.8",
+    "moment-timezone": "^0.5.27",
+    "mongodb": "^6.9.0",
+    "morgan": "^1.9.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "permit": "^0.2.4",
+    "redis": "^2.8.0",
+    "signale": "^1.4.0",
+    "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "ava": "^3.8.1",
+    "babel-eslint": "^10.0.3",
+    "c8": "^7.12.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.33.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "got": "^11.1.0",
+    "http": "0.0.1-security",
+    "link-module-alias": "^1.2.0",
+    "nodemon": "^1.19.4",
+    "tap-json": "^1.0.0",
+    "test-listen": "^1.1.0"
+  },
+  "author": "Joshua Quek <joshua.quek.fullstack@gmail.com>",
+  "github": "https://github.com/joshuaquek",
+  "linkedin": "https://www.linkedin.com/in/joshua-quek/",
+  "personal_email": "joshua.quek.fullstack@gmail.com",
+  "license": "MIT"
+}
