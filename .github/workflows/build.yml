@@ -77,6 +77,9 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Mark as skipped (main)
+        if: ${{ ! (github.ref == 'refs/heads/main') }}
+        run: echo "Skipped main branch scan."
 
   sonarqube-feature:
     name: 2. 🧐 SonarQube Scan (Feature Branch)
@@ -102,6 +105,9 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Mark as skipped (feature)
+        if: ${{ ! startsWith(github.ref, 'refs/heads/feature/') }}
+        run: echo "Skipped feature branch scan."
 
   sonarqube-pr:
     name: 3. 🧐 SonarQube Scan (Pull Request)
@@ -127,3 +133,6 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Mark as skipped (pr)
+        if: ${{ github.event_name != 'pull_request' }}
+        run: echo "Skipped PR scan."
