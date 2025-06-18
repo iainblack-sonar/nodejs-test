@@ -11,7 +11,7 @@ on:
 
 jobs:
   install:
-    name: Install Dependencies
+    name: 📥 Install Dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
         run: npm install
 
   test:
-    name: Run Tests
+    name: 🧪 Run Tests
     runs-on: ubuntu-latest
     needs: install
     steps:
@@ -54,7 +54,7 @@ jobs:
         run: npm test
 
   sonarqube-main:
-    name: 1. SonarQube Scan (main branch)
+    name: 1. 🧐 SonarQube Scan (main branch)
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
@@ -79,7 +79,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   sonarqube-feature:
-    name: 2. SonarQube Scan (Feature Branch)
+    name: 2. 🧐 SonarQube Scan (Feature Branch)
     runs-on: ubuntu-latest
     needs: test
     if: startsWith(github.ref, 'refs/heads/feature/')
@@ -104,7 +104,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   sonarqube-pr:
-    name: 3. SonarQube Scan (Pull Request)
+    name: 3. 🧐 SonarQube Scan (Pull Request)
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'pull_request'
