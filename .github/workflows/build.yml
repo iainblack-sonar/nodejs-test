@@ -54,7 +54,7 @@ jobs:
         run: npm test
 
   sonarqube-main:
-    name: SonarQube Scan (main branch)
+    name: 1. SonarQube Scan (main branch)
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
@@ -78,11 +78,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  sonarqube-pr:
-    name: SonarQube Scan (Pull Request)
+  sonarqube-feature:
+    name: 2. SonarQube Scan (Feature Branch)
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'pull_request'
+    if: startsWith(github.ref, 'refs/heads/feature/')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -103,11 +103,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  sonarqube-feature:
-    name: SonarQube Scan (Feature Branch)
+  sonarqube-pr:
+    name: 3. SonarQube Scan (Pull Request)
     runs-on: ubuntu-latest
     needs: test
-    if: startsWith(github.ref, 'refs/heads/feature/')
+    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
         with:
