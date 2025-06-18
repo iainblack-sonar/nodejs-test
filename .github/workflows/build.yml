@@ -54,7 +54,7 @@ jobs:
         run: npm test
 
   sonarqube-main:
-    name: 🐳 SonarQube Scan (main branch)
+    name: 🐳 Main Branch - Sonarscanner
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
@@ -82,7 +82,7 @@ jobs:
         run: echo "Skipped main branch scan."
 
   sonarqube-main-finish:
-    name: 1b. ✅ Main branch scan finished
+    name: ✅ Main branch scan finished
     runs-on: ubuntu-latest
     needs: sonarqube-main
     if: github.ref == 'refs/heads/main'
@@ -91,7 +91,7 @@ jobs:
         run: echo "Main branch scan finished"
 
   sonarqube-feature:
-    name: 🐳 SonarQube Scan (Feature Branch)
+    name: 🐳 Feature Branch - Sonarscanner
     runs-on: ubuntu-latest
     needs: test
     if: startsWith(github.ref, 'refs/heads/feature/')
@@ -119,7 +119,7 @@ jobs:
         run: echo "Skipped feature branch scan."
 
   sonarqube-feature-finish:
-    name: 2b. ✅ Feature branch scan finished
+    name: ✅ Feature branch scan finished
     runs-on: ubuntu-latest
     needs: sonarqube-feature
     if: startsWith(github.ref, 'refs/heads/feature/')
@@ -128,7 +128,7 @@ jobs:
         run: echo "Feature branch scan finished"
 
   sonarqube-pr:
-    name: 🐳 SonarQube Scan (Pull Request)
+    name: 🐳 Pull Request - Sonarscanner
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'pull_request'
@@ -156,7 +156,7 @@ jobs:
         run: echo "Skipped PR scan."
 
   sonarqube-pr-finish:
-    name: 3b. ✅ PR scan finished
+    name: ✅ Pull Request scan finished
     runs-on: ubuntu-latest
     needs: sonarqube-pr
     if: github.event_name == 'pull_request'
