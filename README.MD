@@ -2,12 +2,39 @@
 
 Easy NodeJS project with ExpressJS and AvaJS for unit testing and code coverage.
 
+---
+
 ## 📄 Description 
+This project is a simple NodeJS application using ExpressJS for building the server and AvaJS for unit testing and code coverage. It also demonstrates code coverage reporting and software composition analysis (SCA) integration with SonarQube/SonarCloud.
 
-This project is a simple NodeJS application using ExpressJS for building the server and AvaJS for unit testing and code coverage.
+## 🗂️ Project Structure
+```
+├── src/
+│   ├── start.js                # Entry point
+│   └── app/
+│       ├── index.js            # Express app setup
+│       └── routes/
+│           ├── index.js        # Main router
+│           └── customers/      # Customer CRUD endpoints
+│               └── ...         # Each endpoint has controller, validator, tests
+├── risky_code/                 # Example files with risky code patterns
+├── scripts/                    # Utility scripts (SCA, SARIF cleaning)
+├── package.json                # Project metadata and scripts
+├── sonar-project.properties    # SonarQube/SonarCloud config
+├── LICENSE
+└── README.MD
+```
 
-## 💻 Installation 
+## ✨ Features
+- RESTful API for managing customers
+- Input validation with Joi
+- Modular route/controller/validator structure
+- Unit tests with AvaJS
+- Code coverage with c8
+- Software Composition Analysis (OWASP Dependency-Check)
+- SonarQube/SonarCloud integration
 
+## 📦 Installation 
 1. Clone the repository:
     ```sh
     git clone https://github.com/SonarSource-Demos/easy-nodejs-app-with-code-coverage.git
@@ -22,34 +49,45 @@ This project is a simple NodeJS application using ExpressJS for building the ser
     ```
 
 ## ⚙️ Usage
-
 1. Start the server:
     ```sh
     npm start
     ```
 2. The server will be running at `http://localhost:9020`.
 
-## 🧪 Running Tests 
+## 🛠️ Environment Variables
+- `BACKEND_API_SERVER_APP_PORT` (default: 9020)
+- `NODE_ENV` (default: production)
 
-To run the tests and generate code coverage, use the following command:
+## 📚 API Endpoints
+- `GET    /api/customers`                - Get all customers
+- `GET    /api/customers/:customer_id`   - Get one customer
+- `POST   /api/customers`                - Create a customer
+- `PUT    /api/customers/:customer_id`   - Update a customer
+- `DELETE /api/customers/:customer_id`   - Delete a customer
+- `GET    /health`                       - Health check
+
+## 🧪 Running Tests & Code Coverage
+To run the tests and generate code coverage:
 ```sh
 npm test
 ```
+Coverage reports are generated in the `coverage/` directory.
 
-## Software Composition Analysis (SCA)
-In order to run the SCA analysis using the OWASP Dependency-Check tool, run the following commands:
+## 📝 Scripts
+- `npm start`         - Start the server
+- `npm test`          - Run tests with coverage
+- `npm run cleansarif`- Clean SARIF report for SonarQube
+
+## 🔒 Software Composition Analysis (SCA)
+To run SCA analysis using OWASP Dependency-Check:
 ```sh
 sh ./scripts/sca_scan.sh
 node ./scripts/clean_sarif_report.js
 ```
 
-The script being run in `sca_scan.sh` essentially is a copy of the one found here https://hub.docker.com/r/owasp/dependency-check in the official OWASP Dependency-Check Docker image Readme, just that I had tweaked it a bit to make it work with whatever project you run it in via multiple `$(pwd)` commands.
-
-After that, it runs a custom JS script to clean out some illegal characters in the generated JSON report that will cause sonarscanner to throw errors. 
-
-Next, you will have to make sure that `sonar-project.properties` has the `sonar.sarifReportPaths` set. I have already set it for you in this repository.
-
-Finally you can run Sonarscanner to do a full scan and also ingest the OWASP Dependency-Check report.
+## 📊 SonarQube/SonarCloud Integration
+Make sure `sonar-project.properties` is configured. Then run:
 
 For SonarCloud:
 ```sh
@@ -63,7 +101,6 @@ sonar-scanner \
   -Dsonar.scanner.debug=true \
   -X
 ```
-
 For SonarQube Self Hosted:
 ```sh
 sonar-scanner \
@@ -76,6 +113,8 @@ sonar-scanner \
   -X
 ```
 
+## 🤝 Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
-## 📝 License
+## 📄 License
 MIT License
