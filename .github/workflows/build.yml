@@ -83,7 +83,7 @@ jobs:
 
   sonarqube-main-finish:
     name: ✅ Main branch scan finished
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: sonarqube-main
     if: github.ref == 'refs/heads/main'
     steps:
@@ -114,6 +114,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: http://localhost:9000
       - name: Mark as skipped (feature)
         if: ${{ ! startsWith(github.ref, 'refs/heads/feature/') }}
         run: echo "Skipped feature branch scan."
