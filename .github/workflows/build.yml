@@ -1,4 +1,4 @@
-name: Build and Test Workflow 
+name: Build, Test, and SonarQube Scan
 
 on:
   push:
@@ -10,9 +10,9 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  install:
-    name: 📥 Install Dependencies
-    runs-on: ubuntu-latest
+  build-test:
+    name: 🧪 Install & Test (Node)
+    runs-on: ubuntu-latest   # Uses hosted runner for general steps; change to self-hosted if you want ALL jobs local
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,38 +26,17 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - name: Install dependencies
         run: npm install
-
-  test:
-    name: 🧪 Run Tests
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Restore node_modules cache
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - name: Run tests
         run: npm test
+      - name: Generate coverage (optional, if using coverage)
+        run: npm run coverage || true   # Adjust to your coverage command
 
-  sonarqube-main:
-    name: 🐳 Main Branch - Sonarscanner
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
+  sonarqube:
+    name: 🔎 SonarQube Scan
+    runs-on: self-hosted                # Critical: scan job MUST use your self-hosted runner!
+    needs: build-test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,96 +50,18 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Mark as skipped (main)
-        if: ${{ ! (github.ref == 'refs/heads/main') }}
-        run: echo "Skipped main branch scan."
+          SONAR_HOST_URL: http://localhost:9000  # OR use IP if runner≠SonarQube host
 
-  sonarqube-main-finish:
-    name: ✅ Main branch scan finished
-    runs-on: self-hosted
-    needs: sonarqube-main
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Echo main branch scan finished
-        run: echo "Main branch scan finished"
+        # Optional: pass explicit PR params for reliability (these override sonar-project.properties if set)
+        with:
+          args: >
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
 
-  sonarqube-feature:
-    name: 🐳 Feature Branch - Sonarscanner
-    runs-on: ubuntu-latest
-    needs: test
-    if: startsWith(github.ref, 'refs/heads/feature/')
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Restore node_modules cache
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: http://localhost:9000
-      - name: Mark as skipped (feature)
-        if: ${{ ! startsWith(github.ref, 'refs/heads/feature/') }}
-        run: echo "Skipped feature branch scan."
-
-  sonarqube-feature-finish:
-    name: ✅ Feature branch scan finished
-    runs-on: ubuntu-latest
-    needs: sonarqube-feature
-    if: startsWith(github.ref, 'refs/heads/feature/')
-    steps:
-      - name: Echo feature branch scan finished
-        run: echo "Feature branch scan finished"
-
-  sonarqube-pr:
-    name: 🐳 Pull Request - Sonarscanner
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Restore node_modules cache
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Mark as skipped (pr)
-        if: ${{ github.event_name != 'pull_request' }}
-        run: echo "Skipped PR scan."
-
-  sonarqube-pr-finish:
-    name: ✅ Pull Request scan finished
-    runs-on: ubuntu-latest
-    needs: sonarqube-pr
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Echo PR scan finished
-        run: echo "PR scan finished"
+      - name: Finished
+        run: echo "SonarQube scan completed"
